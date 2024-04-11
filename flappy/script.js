@@ -1,10 +1,19 @@
-function onDocumentLoad() {
+let birdSpeed = 0;
+let lastKeyPressTime = 0;
+let gravity = 1; // Adjust the gravity value as needed
+
+document.addEventListener('DOMContentLoaded', function () {
     // Create a barrier every 2 seconds
     setInterval(addBarrier, 2000);
     // Call the moveBarriers function periodically
-    setInterval(moveBarriers, 100); // Adjust the interval as needed
-    setInterval(detectCollision, 1); // Adjust the interval as needed
-}
+    setInterval(moveBarriers, 10); // Adjust the interval as needed
+    setInterval(detectCollision, 100); // Adjust the interval as needed
+    document.addEventListener('keydown', function (event) {
+        if (event.key == ' ' && (new Date().getTime() - lastKeyPressTime) > 1000) {
+            birdSpeed += 20; // Adjust the speed value as needed
+        }
+    });
+});
 
 // Create a function to add a barrier to the right of the scene
 function addBarrier() {
@@ -36,11 +45,17 @@ function getRandomNumber(min, max) {
 // Move all barriers to the left by a certain amount
 function moveBarriers() {
     const barriers = document.querySelectorAll('.barrier');
-    const moveAmount = 10; // Adjust this value to change the amount of movement
+    const moveAmount = 2; // Adjust this value to change the amount of movement
 
     barriers.forEach(barrier => {
         const currentLeft = parseInt(barrier.style.left);
-        barrier.style.left = `${currentLeft - moveAmount}px`;
+        const newLeft = currentLeft - moveAmount;
+        if (newLeft < -barrier.offsetWidth) {
+            barrier.remove();
+        }
+        else {
+            barrier.style.left = `${newLeft}px`;
+        }
     });
 }
 
@@ -60,7 +75,8 @@ function detectCollision() {
         const isAtGap = !(birdRect.top < barrierTopRect.bottom || birdRect.bottom > barrierBottomRect.top);
 
         if (isAtBarrier && !isAtGap) {
-            ('Game Over!');
+            return true;
         }
     }
+    return false;
 }
