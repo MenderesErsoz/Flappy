@@ -60,7 +60,7 @@ function detectCollision() {
         const isAtGap = !(birdRect.top < barrierTopRect.bottom || birdRect.bottom > barrierBottomRect.top);
 
         if (isAtBarrier && !isAtGap) {
-            alert('Game Over!');
+            ('Game Over!');
         }
     }
 }
