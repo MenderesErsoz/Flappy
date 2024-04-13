@@ -1,19 +1,24 @@
 let birdSpeed = 0;
 let lastKeyPressTime = 0;
-let gravity = 1; // Adjust the gravity value as needed
+let gravity = 1;  
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Create a barrier every 2 seconds
     setInterval(addBarrier, 2000);
-    // Call the moveBarriers function periodically
     setInterval(moveBarriers, 10); // Adjust the interval as needed
     setInterval(detectCollision, 100); // Adjust the interval as needed
-    document.addEventListener('keydown', function (event) {
+    addEventToBird();
+});
+
+function addEventToBird() {
+    parent.window.addEventListener('keydown', function (event) {
         if (event.key == ' ' && (new Date().getTime() - lastKeyPressTime) > 1000) {
             birdSpeed += 20; // Adjust the speed value as needed
         }
+        bird = document.querySelector('#bird');
+        let currentTop = parseFloat(window.getComputedStyle(bird).getPropertyValue('top'));
+        bird.style.top = (currentTop - birdSpeed) + 'px';
     });
-});
+}
 
 // Create a function to add a barrier to the right of the scene
 function addBarrier() {
