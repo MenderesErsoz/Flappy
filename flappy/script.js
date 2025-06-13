@@ -1,10 +1,11 @@
-let GRAVITY = 0.01;  
-let REFRESH_RATE = 1; // Adjust the refresh rate as needed
-let BARRIER_SPAN_RATE = 2000; // Adjust the barrier span rate as needed
-let HORIZONTAL_SPEED = 2; // Adjust the horizontal speed as needed
-let JUMP_INTERVAL  = 100; // Adjust the jump interval as needed
+let GRAVITY = 0.01;
+let JUMPSPEED = 2.0
+let REFRESH_RATE = 1; 
 let GAP_HEIGHT_MIN = 30
 let GAP_HEIGHT_MAX = 40
+let JUMP_INTERVAL = 100;  
+let HORIZONTAL_SPEED = 2; 
+let BARRIER_SPAN_RATE = 2000; 
 
 let birdSpeed = 0.0;
 let lastKeyPressTime = 0;
@@ -18,12 +19,13 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function game_start() {
+    document.getElementById('end-menu').style.display = 'none';
     deleteAllBarriers();
-    document.getElementById('bird').style.top= "50%"
+    document.getElementById('bird').style.top = "50%"
     gameIntervals.push(setInterval(addBarrier, BARRIER_SPAN_RATE));
     gameIntervals.push(setInterval(moveBarriers, HORIZONTAL_SPEED));
     gameIntervals.push(setInterval(detectCollisionWithBarrier, 100));
-    gameIntervals.push(setInterval(function () {birdSpeed -= GRAVITY;}, REFRESH_RATE));
+    gameIntervals.push(setInterval(function () { birdSpeed -= GRAVITY; }, REFRESH_RATE));
     gameIntervals.push(setInterval(updateBirdPosition, REFRESH_RATE));
     gameIntervals.push(setInterval(checkCollision, REFRESH_RATE));
     gameIntervals.push(setInterval(updateScore, REFRESH_RATE));
@@ -33,7 +35,7 @@ function game_start() {
         let untilLastKeyPressTime = new Date().getTime() - lastKeyPressTime
         if (event.key == ' ' && untilLastKeyPressTime > JUMP_INTERVAL) {
             lastKeyPressTime = new Date().getTime();
-            birdSpeed += 3.0; // Adjust the speed value as needed
+            birdSpeed += JUMPSPEED; // Adjust the speed value as needed
         }
     }
 
@@ -44,15 +46,13 @@ function game_start() {
     lastKeyPressTime = 0;
     lastBarrierId = 1;
     score = 0;
-    
-    document.getElementById('end-menu').style.display = 'none';
 }
 
-function setDirectionOfBird() { 
+function setDirectionOfBird() {
     bird = document.querySelector('#bird');
-    let angle = birdSpeed * -30.0;    
-    if(angle > 90) angle = 90;
-    else if(angle < -60) angle = -60;
+    let angle = birdSpeed * -30.0;
+    if (angle > 90) angle = 90;
+    else if (angle < -60) angle = -60;
     bird.style.transform = `rotate(${angle}deg)`;
 }
 
@@ -113,19 +113,19 @@ function addBarrier() {
     scene.appendChild(barrier);
 }
 
-function updateScore(){
+function updateScore() {
     bird = document.querySelector('#bird');
     barriers = document.getElementsByClassName('barrier')
-    
+
     big_id = 0;
-    for (let barrier of barriers){
-        if(barrier.getBoundingClientRect().right <  bird.getBoundingClientRect().left ){
+    for (let barrier of barriers) {
+        if (barrier.getBoundingClientRect().right < bird.getBoundingClientRect().left) {
             barrier_id = parseInt(barrier.id.split('_')[1])
-            if(score < barrier_id){
+            if (score < barrier_id) {
                 score = barrier_id;
             }
         }
-        else{
+        else {
             break;
         }
     }
@@ -137,11 +137,9 @@ function getRandomNumber(min, max) {
 }
 
 
-// Move all barriers to the left by a certain amount
 function moveBarriers() {
     const barriers = document.querySelectorAll('.barrier');
-    const moveAmount = 1; // Adjust this value to change the amount of movement
-
+    const moveAmount = 1;
     barriers.forEach(barrier => {
         const currentLeft = parseInt(barrier.style.left);
         const newLeft = currentLeft - moveAmount;
@@ -189,4 +187,8 @@ function game_end() {
     document.getElementById('final-score').innerHTML = score;
     document.getElementById('end-menu').style.display = 'block';
     gameIntervals.forEach(interval => clearInterval(interval));
+
+    score = 0;
+    birdSpeed = 0;
+    lastBarrierId = 0;
 }
